@@ -8,25 +8,43 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #header {
+      height: 50px;
+      background-color: #003366;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
     }
     #contentFrame {
       width: 100%;
-      height: 100%;
+      height: calc(100% - 50px);
       border: none;
     }
   </style>
   <script>
-    // Time schedule in minutes
+    // Define your schedule in minutes since midnight
     const schedule = [
-      { start: 7*60+30, end: 8*60+15, url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27" },
-      { start: 14*60+45, end: 15*60+15, url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27" }
+      {
+        start: 7*60 + 30,
+        end: 8*60 + 15,
+        url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27"
+      },
+      {
+        start: 14*60 + 45,
+        end: 15*60 + 15,
+        url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27"
+      }
     ];
 
-    const defaultUrl = "main.html"; // your main page under your GitHub URL
+    const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
 
     function getCurrentUrl() {
       const now = new Date();
-      const minutes = now.getHours()*60 + now.getMinutes();
+      const minutes = now.getHours() * 60 + now.getMinutes();
       for (const slot of schedule) {
         if (minutes >= slot.start && minutes <= slot.end) return slot.url;
       }
@@ -37,17 +55,18 @@
       const iframe = document.getElementById("contentFrame");
       const target = getCurrentUrl();
       if (iframe.src !== target) {
-        iframe.src = target; // swap iframe without leaving GitHub URL
+        iframe.src = target; // iframe swap
       }
     }
 
     window.onload = () => {
-      updateFrame();                // load correct page immediately
+      updateFrame();                 // load correct page immediately
       setInterval(updateFrame, 30000); // check every 30 seconds
     };
   </script>
 </head>
 <body>
-  <iframe id="contentFrame" src="main.html"></iframe>
+  <div id="header">Frisch Attendance Kiosk</div>
+  <iframe id="contentFrame" src=""></iframe>
 </body>
 </html>
