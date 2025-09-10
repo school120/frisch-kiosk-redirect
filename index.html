@@ -2,6 +2,19 @@
 <html>
 <head>
   <title>Frisch Attendance Redirect</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
   <script>
     function getTargetUrl() {
       const now = new Date();
@@ -23,21 +36,20 @@
 
     function redirectLoop() {
       const targetUrl = getTargetUrl();
-      if (window.location.href !== targetUrl) {
-        window.location.replace(targetUrl);
+      const iframe = document.getElementById("mainFrame");
+
+      if (iframe.src !== targetUrl) {
+        iframe.src = targetUrl;
       }
     }
 
     window.onload = () => {
-      // Jump immediately to correct page
-      redirectLoop();
-
-      // Keep checking every 30 seconds (adjustable)
-      setInterval(redirectLoop, 30000);
+      redirectLoop(); // Load correct page immediately
+      setInterval(redirectLoop, 30000); // Re-check every 30s
     };
   </script>
 </head>
 <body>
-  Redirecting to the correct page...
+  <iframe id="mainFrame"></iframe>
 </body>
 </html>
