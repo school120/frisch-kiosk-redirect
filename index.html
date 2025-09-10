@@ -3,32 +3,37 @@
 <head>
   <title>Frisch Attendance Redirect</title>
   <script>
-    function redirectByTime() {
+    function getTargetUrl() {
       const now = new Date();
       const minutes = now.getHours() * 60 + now.getMinutes();
 
       const morningStart = 7 * 60 + 30;  // 7:30 AM
       const morningEnd   = 8 * 60 + 15;  // 8:15 AM
-      const afternoonStart = 14 * 60 + 45; // 2:45 PM
+      const afternoonStart = 14 * 60 + 35; // 2:35 PM
       const afternoonEnd   = 15 * 60 + 15; // 3:15 PM
 
-      let targetUrl = "https://www.qwickly.tools/attendance/login/frisch/";
-
       if (minutes >= morningStart && minutes <= morningEnd) {
-        targetUrl = "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27";
+        return "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27";
       } else if (minutes >= afternoonStart && minutes <= afternoonEnd) {
-        targetUrl = "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27";
-      }
-
-      if (window.location.href !== targetUrl) {
-        window.location.href = targetUrl;
+        return "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27";
+      } else {
+        return "https://www.qwickly.tools/attendance/login/frisch/";
       }
     }
 
-    // Run immediately and then check every 60 seconds
+    function redirectLoop() {
+      const targetUrl = getTargetUrl();
+      if (window.location.href !== targetUrl) {
+        window.location.replace(targetUrl);
+      }
+    }
+
     window.onload = () => {
-      redirectByTime();
-      setInterval(redirectByTime, 60000);
+      // Jump immediately to correct page
+      redirectLoop();
+
+      // Keep checking every 30 seconds (adjustable)
+      setInterval(redirectLoop, 30000);
     };
   </script>
 </head>
