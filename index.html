@@ -2,19 +2,6 @@
 <html>
 <head>
   <title>Frisch Attendance Kiosk</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-    #contentFrame {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
   <script>
     const schedule = [
       {
@@ -34,31 +21,26 @@
     function getCurrentUrl() {
       const now = new Date();
       const minutes = now.getHours()*60 + now.getMinutes();
-
       for (const slot of schedule) {
-        if (minutes >= slot.start && minutes <= slot.end) {
-          return slot.url;
-        }
+        if (minutes >= slot.start && minutes <= slot.end) return slot.url;
       }
       return defaultUrl;
     }
 
-    function updateFrame() {
+    function redirectLoop() {
       const targetUrl = getCurrentUrl();
-      const iframe = document.getElementById("contentFrame");
-
-      if (iframe.src !== targetUrl) {
-        iframe.src = targetUrl; // iframe swaps without leaving index.html
+      if (window.location.href !== targetUrl) {
+        window.location.href = targetUrl; // redirects, uses cached login
       }
     }
 
     window.onload = () => {
-      updateFrame();                // load correct page immediately
-      setInterval(updateFrame, 30000); // check every 30 seconds
+      redirectLoop();                 // redirect immediately
+      setInterval(redirectLoop, 30000); // check every 30 seconds
     };
   </script>
 </head>
 <body>
-  <iframe id="contentFrame"></iframe>
+  Redirecting...
 </body>
 </html>
