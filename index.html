@@ -2,21 +2,27 @@
 <html>
 <head>
   <title>Frisch Attendance Kiosk</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #contentFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
   <script>
+    // Time schedule in minutes
     const schedule = [
-      {
-        start: 7*60 + 30,  // 7:30 AM
-        end: 8*60 + 15,    // 8:15 AM
-        url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27"
-      },
-      {
-        start: 15*60 + 05, // 3:05 PM
-        end: 15*60 + 15,   // 3:15 PM
-        url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27"
-      }
+      { start: 7*60+30, end: 8*60+15, url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27" },
+      { start: 14*60+45, end: 15*60+15, url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27" }
     ];
 
-    const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
+    const defaultUrl = "main.html"; // your main page under your GitHub URL
 
     function getCurrentUrl() {
       const now = new Date();
@@ -27,20 +33,21 @@
       return defaultUrl;
     }
 
-    function redirectLoop() {
-      const targetUrl = getCurrentUrl();
-      if (window.location.href !== targetUrl) {
-        window.location.href = targetUrl; // redirects, uses cached login
+    function updateFrame() {
+      const iframe = document.getElementById("contentFrame");
+      const target = getCurrentUrl();
+      if (iframe.src !== target) {
+        iframe.src = target; // swap iframe without leaving GitHub URL
       }
     }
 
     window.onload = () => {
-      redirectLoop();                 // redirect immediately
-      setInterval(redirectLoop, 30000); // check every 30 seconds
+      updateFrame();                // load correct page immediately
+      setInterval(updateFrame, 30000); // check every 30 seconds
     };
   </script>
 </head>
 <body>
-  Redirecting...
+  <iframe id="contentFrame" src="main.html"></iframe>
 </body>
 </html>
