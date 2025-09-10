@@ -1,50 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Frisch Attendance Kiosk</title>
-  <script>
-    // Time schedule in minutes since midnight
-    const schedule = [
-      {
-        start: 7*60 + 30,   // 7:30 AM
-        end: 8*60 + 15,     // 8:15 AM
-        url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request=%27initial%27"
-      },
-      {
-        start: 14*60 + 45,  // 2:45 PM
-        end: 15*60 + 20,    // 3:20 PM
-        url: "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request=%27initial%27"
-      }
-    ];
+    <meta charset="UTF-8">
+    <title>Qwickly Attendance Redirect</title>
+    <script>
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
 
-    const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
+        // Convert current time to minutes since midnight
+        const currentTime = hours * 60 + minutes;
 
-    // Determine the correct URL for current time
-    function getCurrentUrl() {
-      const now = new Date();
-      const minutes = now.getHours() * 60 + now.getMinutes();
-      for (const slot of schedule) {
-        if (minutes >= slot.start && minutes <= slot.end) return slot.url;
-      }
-      return defaultUrl;
-    }
-
-    // Redirect if needed
-    function redirectLoop() {
-      const targetUrl = getCurrentUrl();
-      if (window.location.href !== targetUrl) {
-        window.location.href = targetUrl; // uses cached login
-      }
-    }
-
-    window.onload = () => {
-      redirectLoop();                   // immediate redirect on load
-      setInterval(redirectLoop, 30000); // check every 30 seconds
-    };
-  </script>
+        // Define time windows in minutes
+        const morningStart = 7 * 60 + 30;   // 7:30 AM
+        const morningEnd = 8 * 60 + 15;     // 8:15 AM
+        const afternoonStart = 14 * 60 + 45; // 2:45 PM
+        const afternoonEnd = 15 * 60 + 15;   // 3:15 PM
+        if (currentTime >= morningStart && currentTime <= morningEnd) {
+            window.location.href = "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request='initial'";
+        } else if (currentTime >= afternoonStart && currentTime <= afternoonEnd) {
+            window.location.href = "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request='initial'";
+        }
+    </script>
 </head>
 <body>
-  <h1 style="text-align:center;margin-top:50px;">Frisch Attendance Kiosk</h1>
-  <p style="text-align:center;">Automatically loading the correct attendance page...</p>
+    <h1>Welcome to Qwickly Attendance</h1>
+    <p>This page will automatically redirect during attendance windows.</p>
 </body>
 </html>
