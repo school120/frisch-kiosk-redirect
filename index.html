@@ -9,10 +9,6 @@
             text-align: center;
             padding-top: 50px;
         }
-        .content-box {
-            margin-top: 30px;
-            font-size: 18px;
-        }
         .link-button {
             display: inline-block;
             padding: 15px 25px;
@@ -21,10 +17,11 @@
             color: white;
             text-decoration: none;
             border-radius: 8px;
+            margin-top: 20px;
         }
     </style>
     <script>
-        function getContent() {
+        function updateContent() {
             const now = new Date();
             const hours = now.getHours();
             const minutes = now.getMinutes();
@@ -35,29 +32,30 @@
             const afternoonStart = 14 * 60 + 45;
             const afternoonEnd = 15 * 60 + 15;
 
-            const contentBox = document.getElementById("content");
+            const content = document.getElementById("content");
 
             if (currentTime >= morningStart && currentTime <= morningEnd) {
-                contentBox.innerHTML = `
-                    <p>It's time for morning attendance.</p>
-                    <a class="link-button" href="https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domainst=Take Morning Attendance</a>
-                `;
+                content.innerHTML = `
+                    <p>It's time for <strong>morning attendance</strong>.</p>
+                    <a class="link-button" href="https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request='initial'"     `;
             } else if (currentTime >= afternoonStart && currentTime <= afternoonEnd) {
-                contentBox.innerHTML = `
-                    <p>It's time for afternoon attendance.</p>
-                    <a class="link-button" href="https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request='initial'" target="_            } else {
-                contentBox.innerHTML = `
+                content.innerHTML = `
+                    <p>It's time for <strong>afternoon attendance</strong>.</p>
+                    <a class="link-button" href="https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request='initial'" target`;
+            } else {
+                content.innerHTML = `
                     <p>Attendance is currently closed.</p>
-                    <a class="link-button" href="https://www.qwickly.tools/attendance/login/frisch/"       `;
+                    <a class="link-button" href="https://www.qwickly.tools/attendancee</a>
+                `;
             }
         }
 
-        window.onload = getContent;
+        window.onload = updateContent;
     </script>
 </head>
 <body>
     <h1>Qwickly Attendance</h1>
-    <div id="content" class="content-box">
+    <div id="content">
         <p>Loading attendance options...</p>
     </div>
 </body>
