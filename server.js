@@ -4,7 +4,7 @@ const app = express();
 
 app.get('/', async (req, res) => {
   const now = new Date();
-  const estOffset = -4 * 60; // EDT offset in minutes
+  const estOffset = -4 * 60;
   const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
   const estMinutes = utcMinutes + estOffset;
 
