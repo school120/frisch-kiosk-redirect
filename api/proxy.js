@@ -1,6 +1,4 @@
-import fetch from 'node-fetch';
-
-export default async function handler(req, res) {
+export default async function handler(request) {
   const now = new Date();
   const estOffset = -4 * 60; // EDT offset in minutes
   const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
@@ -22,9 +20,16 @@ export default async function handler(req, res) {
   try {
     const response = await fetch(targetUrl);
     const html = await response.text();
-    res.setHeader('Content-Type', 'text/html');
-    res.status(200).send(html);
+
+    return new Response(html, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html"
+      }
+    });
   } catch (error) {
-    res.status(500).send("Error fetching attendance page.");
+    return new Response("Error fetching attendance page.", {
+      status: 500
+    });
   }
 }
