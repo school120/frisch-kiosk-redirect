@@ -24,12 +24,16 @@ export default async function handler(request) {
     return new Response(html, {
       status: 200,
       headers: {
-        "Content-Type": "text/html"
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store"
       }
     });
   } catch (error) {
     return new Response("Error fetching attendance page.", {
-      status: 500
+      status: 500,
+      headers: {
+        "Content-Type": "text/plain"
+      }
     });
   }
 }
