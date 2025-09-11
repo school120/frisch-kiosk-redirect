@@ -2,29 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Qwickly Attendance Redirect</title>
-    <script>
-        const now = new Date();
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-
-        // Convert current time to minutes since midnight
-        const currentTime = hours * 60 + minutes;
-
-        // Define time windows in minutes
-        const morningStart = 7 * 60 + 30;   // 7:30 AM
-        const morningEnd = 8 * 60 + 15;     // 8:15 AM
-        const afternoonStart = 14 * 60 + 45; // 2:45 PM
-        const afternoonEnd = 15 * 60 + 15;   // 3:15 PM
-        if (currentTime >= morningStart && currentTime <= morningEnd) {
-            window.location.href = "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request='initial'";
-        } else if (currentTime >= afternoonStart && currentTime <= afternoonEnd) {
-            window.location.href = "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request='initial'";
+    <title>Qwickly Attendance Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
         }
+        .content-box {
+            margin-top: 30px;
+            font-size: 18px;
+        }
+        .link-button {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        function getContent() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const currentTime = hours * 60 + minutes;
+
+            const morningStart = 7 * 60 + 30;
+            const morningEnd = 8 * 60 + 15;
+            const afternoonStart = 14 * 60 + 45;
+            const afternoonEnd = 15 * 60 + 15;
+
+            const contentBox = document.getElementById("content");
+
+            if (currentTime >= morningStart && currentTime <= morningEnd) {
+                contentBox.innerHTML = `
+                    <p>It's time for morning attendance.</p>
+                    <a class="link-button" href="https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domainst=Take Morning Attendance</a>
+                `;
+            } else if (currentTime >= afternoonStart && currentTime <= afternoonEnd) {
+                contentBox.innerHTML = `
+                    <p>It's time for afternoon attendance.</p>
+                    <a class="link-button" href="https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request='initial'" target="_            } else {
+                contentBox.innerHTML = `
+                    <p>Attendance is currently closed.</p>
+                    <a class="link-button" href="https://www.qwickly.tools/attendance/login/frisch/"       `;
+            }
+        }
+
+        window.onload = getContent;
     </script>
 </head>
 <body>
-    <h1>Welcome to Qwickly Attendance</h1>
-    <p>This page will automatically redirect during attendance windows.</p>
+    <h1>Qwickly Attendance</h1>
+    <div id="content" class="content-box">
+        <p>Loading attendance options...</p>
+    </div>
 </body>
 </html>
