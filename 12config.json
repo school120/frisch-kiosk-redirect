@@ -1,19 +1,16 @@
 {
-  "start": "07:30",
-  "end": "15:15",
-  "url": "https://www.qwickly.tools/attendance/login/frisch/",
-  "redirectHandling": true,
-  "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
   "redirects": [
     {
       "start": "07:30",
       "end": "08:15",
-      "url": "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=9983&domain=www.frisch.org&initial_request='initial'"
+      "day": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "url": "https://www.qwickly.tools/attendance/takerecord/?id=9983"
     },
     {
-      "start": "11:15",
+      "start": "14:45",
       "end": "15:15",
-      "url": "https://www.qwickly.tools/attendance/takerecord/?request_lms=Veracross&id=10344&domain=www.frisch.org&initial_request='initial'"
+      "day": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "url": "https://www.qwickly.tools/attendance/takerecord/?id=10344"
     }
   ]
 }
