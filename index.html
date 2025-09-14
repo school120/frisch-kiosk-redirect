@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Qwickly Scheduler</title>
+  <title>Qwickly Kiosk Scheduler</title>
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKe2eYoo_HRzQ8N7qKNEt82UTG4G3aGIunVJBrrGyMINKLLzYiQr0XBpbevU1MOkl7hkA2zAxcazdt/pub?output=csv";
     const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
 
     let redirectSchedule = [];
+    let qwicklyTab = null;
 
     async function fetchSchedule() {
       try {
@@ -39,13 +40,31 @@
           return slot.url;
         }
       }
-      return defaultUrl; // default when no slot active
+      return defaultUrl;
     }
 
     function startScheduler() {
+      // Open Qwickly tab once if not already opened
+      if (!qwicklyTab || qwicklyTab.closed) {
+        qwicklyTab = window.open(defaultUrl, "_blank");
+      }
+
       setInterval(() => {
+        if (!qwicklyTab || qwicklyTab.closed) {
+          qwicklyTab = window.open(defaultUrl, "_blank");
+        }
+
         const targetUrl = getCurrentScheduleUrl();
-        console.log("📌 Current page should be:", targetUrl);
+
+        try {
+          // Only navigate if different URL
+          if (qwicklyTab.location.href !== targetUrl) {
+            qwicklyTab.location.href = targetUrl;
+          }
+        } catch (err) {
+          // Cross-origin restriction blocks location.href read; navigate anyway
+          qwicklyTab.location.href = targetUrl;
+        }
       }, 10 * 1000); // check every 10 seconds
     }
 
@@ -56,8 +75,8 @@
   </script>
 </head>
 <body>
-  <h2>Qwickly Scheduler</h2>
-  <p>✅ Scheduler running. Check the console to see which URL should be active.</p>
-  <p>⚠️ Keep your Qwickly tab logged in. This page won’t redirect it automatically to avoid multiple tabs.</p>
+  <h2>Qwickly Kiosk Scheduler</h2>
+  <p>✅ Scheduler running. Qwickly tab opens once and automatically navigates to scheduled URLs.</p>
+  <p>⚠️ Make sure to log in once manually to maintain session.</p>
 </body>
 </html>
