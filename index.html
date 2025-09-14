@@ -7,6 +7,9 @@
     // 🔹 Replace with your published Google Sheet CSV link
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKe2eYoo_HRzQ8N7qKNEt82UTG4G3aGIunVJBrrGyMINKLLzYiQr0XBpbevU1MOkl7hkA2zAxcazdt/pub?output=csv";
 
+    // 🔹 Default URL when no schedule is active
+    const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
+
     let redirectSchedule = [];
 
     async function fetchSchedule() {
@@ -44,23 +47,28 @@
 
     function startRedirectLoop() {
       setInterval(() => {
-        const targetUrl = getCurrentScheduleUrl();
-        if (targetUrl && window.location.href !== targetUrl) {
+        const targetUrl = getCurrentScheduleUrl() || defaultUrl;
+        if (window.location.href !== targetUrl) {
           console.log("➡️ Redirecting to:", targetUrl);
           window.location.href = targetUrl;
         }
-      }, 60 * 1000); // check every minute
+      }, 10 * 1000); // check every 10 seconds
     }
 
     window.onload = async () => {
       await fetchSchedule();
+      // Go to default immediately at start
+      if (window.location.href !== defaultUrl) {
+        window.location.href = defaultUrl;
+      }
       startRedirectLoop();
     };
   </script>
 </head>
 <body>
-  <h2>Auto Page Switcher (Day optional)</h2>
-  <p>This page changes URLs based on Google Sheet schedule.</p>
-  <p>Leave <b>Day</b> empty in the sheet for "everyday" schedules.</p>
+  <h2>Auto Page Switcher</h2>
+  <p>✅ By default, stays on <code>https://www.qwickly.tools/attendance/login/frisch/</code>.</p>
+  <p>⏱️ Redirects only when schedule says so.</p>
+  <p>🔄 Checks every <b>10 seconds</b> for updates.</p>
 </body>
 </html>
