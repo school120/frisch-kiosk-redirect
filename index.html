@@ -2,28 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auto Page Switcher with Google Sheets</title>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-    }
-    #targetFrame {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+  <title>Qwickly Scheduler</title>
   <script>
-    // 🔹 Replace with your published Google Sheet CSV link
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKe2eYoo_HRzQ8N7qKNEt82UTG4G3aGIunVJBrrGyMINKLLzYiQr0XBpbevU1MOkl7hkA2zAxcazdt/pub?output=csv";
-
-    // 🔹 Default URL (Qwickly login page)
     const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
 
     let redirectSchedule = [];
+    let qwicklyTab = null;
 
     async function fetchSchedule() {
       try {
@@ -32,7 +17,7 @@
         redirectSchedule = text.split("\n").slice(1).map(row => {
           const [day, start, end, url] = row.split(",");
           return {
-            day: day ? day.trim().toLowerCase() : "", // blank = every day
+            day: day ? day.trim().toLowerCase() : "",
             start: start.trim(),
             end: end.trim(),
             url: url.trim()
@@ -58,28 +43,31 @@
       return null;
     }
 
-    function startIframeLoop() {
-      const iframe = document.getElementById("targetFrame");
-
+    function startScheduler() {
       setInterval(() => {
         const targetUrl = getCurrentScheduleUrl() || defaultUrl;
 
-        if (iframe.src !== targetUrl) {
-          console.log("➡️ Switching iframe to:", targetUrl);
-          iframe.src = targetUrl;
+        // Open the tab if it doesn't exist or was closed
+        if (!qwicklyTab || qwicklyTab.closed) {
+          qwicklyTab = window.open(targetUrl, "_blank");
+        } 
+        // If tab exists and URL is different, navigate
+        else if (qwicklyTab.location.href !== targetUrl) {
+          qwicklyTab.location.href = targetUrl;
         }
-      }, 10 * 1000); // check every 10 seconds
+
+        qwicklyTab.focus(); // optional: bring tab to front
+      }, 10 * 1000); // every 10 seconds
     }
 
     window.onload = async () => {
       await fetchSchedule();
-      // Set iframe to default immediately
-      document.getElementById("targetFrame").src = defaultUrl;
-      startIframeLoop();
+      startScheduler();
     };
   </script>
 </head>
 <body>
-  <iframe id="targetFrame"></iframe>
+  <h2>Qwickly Scheduler</h2>
+  <p>✅ Scheduler running. Qwickly page opens in a separate tab and stays updated every 10 seconds.</p>
 </body>
 </html>
