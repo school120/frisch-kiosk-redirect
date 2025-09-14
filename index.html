@@ -2,13 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Qwickly Kiosk Scheduler</title>
+  <title>Qwickly Scheduler</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .current-url {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px solid #333;
+      border-radius: 5px;
+      display: inline-block;
+    }
+    .alert {
+      color: white;
+      background-color: #f44336;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Qwickly Scheduler</h1>
+  <p>Keep your Qwickly tab logged in. This page will tell you which URL should be active according to your schedule.</p>
+
+  <div>
+    <span>Current Scheduled URL:</span>
+    <div class="current-url" id="currentUrl">Loading...</div>
+  </div>
+
+  <div class="alert" id="alertBox">⚠️ Scheduled URL has changed!</div>
+
   <script>
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKe2eYoo_HRzQ8N7qKNEt82UTG4G3aGIunVJBrrGyMINKLLzYiQr0XBpbevU1MOkl7hkA2zAxcazdt/pub?output=csv";
     const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
 
     let redirectSchedule = [];
-    let qwicklyTab = null;
+    let lastUrl = "";
 
     async function fetchSchedule() {
       try {
@@ -20,7 +55,7 @@
             day: day ? day.trim().toLowerCase() : "",
             start: start.trim(),
             end: end.trim(),
-            url: url.trim()
+            url: url ? url.trim() : defaultUrl
           };
         });
         console.log("✅ Schedule loaded", redirectSchedule);
@@ -32,7 +67,7 @@
     function getCurrentScheduleUrl() {
       const now = new Date();
       const currentDay = now.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
-      const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      const currentTime = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
 
       for (const slot of redirectSchedule) {
         const appliesToday = slot.day === "" || slot.day === currentDay;
@@ -43,40 +78,27 @@
       return defaultUrl;
     }
 
-    function startScheduler() {
-      // Open Qwickly tab once if not already opened
-      if (!qwicklyTab || qwicklyTab.closed) {
-        qwicklyTab = window.open(defaultUrl, "_blank");
+    function updateScheduler() {
+      const currentUrl = getCurrentScheduleUrl();
+      const urlDisplay = document.getElementById("currentUrl");
+      const alertBox = document.getElementById("alertBox");
+
+      urlDisplay.textContent = currentUrl;
+
+      if (currentUrl !== lastUrl) {
+        // Show visual alert
+        alertBox.style.display = "block";
+        setTimeout(() => { alertBox.style.display = "none"; }, 5000); // hide after 5 seconds
+        lastUrl = currentUrl;
+        console.log("⚡ Scheduled URL changed to:", currentUrl);
       }
-
-      setInterval(() => {
-        if (!qwicklyTab || qwicklyTab.closed) {
-          qwicklyTab = window.open(defaultUrl, "_blank");
-        }
-
-        const targetUrl = getCurrentScheduleUrl();
-
-        try {
-          // Only navigate if different URL
-          if (qwicklyTab.location.href !== targetUrl) {
-            qwicklyTab.location.href = targetUrl;
-          }
-        } catch (err) {
-          // Cross-origin restriction blocks location.href read; navigate anyway
-          qwicklyTab.location.href = targetUrl;
-        }
-      }, 10 * 1000); // check every 10 seconds
     }
 
     window.onload = async () => {
       await fetchSchedule();
-      startScheduler();
+      updateScheduler();
+      setInterval(updateScheduler, 10 * 1000); // check every 10 seconds
     };
   </script>
-</head>
-<body>
-  <h2>Qwickly Kiosk Scheduler</h2>
-  <p>✅ Scheduler running. Qwickly tab opens once and automatically navigates to scheduled URLs.</p>
-  <p>⚠️ Make sure to log in once manually to maintain session.</p>
 </body>
 </html>
