@@ -2,12 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auto Login & URL Switcher</title>
+  <title>Auto Page Switcher with Google Sheets</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    #targetFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
   <script>
     // 🔹 Replace with your published Google Sheet CSV link
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKe2eYoo_HRzQ8N7qKNEt82UTG4G3aGIunVJBrrGyMINKLLzYiQr0XBpbevU1MOkl7hkA2zAxcazdt/pub?output=csv";
 
-    // 🔹 Default URL when no schedule is active
+    // 🔹 Default URL (Qwickly login page)
     const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
 
     let redirectSchedule = [];
@@ -45,30 +58,28 @@
       return null;
     }
 
-    function startRedirectLoop() {
+    function startIframeLoop() {
+      const iframe = document.getElementById("targetFrame");
+
       setInterval(() => {
         const targetUrl = getCurrentScheduleUrl() || defaultUrl;
-        if (window.location.href !== targetUrl) {
-          console.log("➡️ Redirecting to:", targetUrl);
-          window.location.href = targetUrl;
+
+        if (iframe.src !== targetUrl) {
+          console.log("➡️ Switching iframe to:", targetUrl);
+          iframe.src = targetUrl;
         }
       }, 10 * 1000); // check every 10 seconds
     }
 
     window.onload = async () => {
       await fetchSchedule();
-      // Go to default immediately at start
-      if (window.location.href !== defaultUrl) {
-        window.location.href = defaultUrl;
-      }
-      startRedirectLoop();
+      // Set iframe to default immediately
+      document.getElementById("targetFrame").src = defaultUrl;
+      startIframeLoop();
     };
   </script>
 </head>
 <body>
-  <h2>Auto Page Switcher</h2>
-  <p>✅ By default, stays on <code>https://www.qwickly.tools/attendance/login/frisch/</code>.</p>
-  <p>⏱️ Redirects only when schedule says so.</p>
-  <p>🔄 Checks every <b>10 seconds</b> for updates.</p>
+  <iframe id="targetFrame"></iframe>
 </body>
 </html>
