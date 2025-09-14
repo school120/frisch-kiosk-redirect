@@ -8,7 +8,6 @@
     const defaultUrl = "https://www.qwickly.tools/attendance/login/frisch/";
 
     let redirectSchedule = [];
-    let qwicklyTab = null;
 
     async function fetchSchedule() {
       try {
@@ -23,9 +22,9 @@
             url: url.trim()
           };
         });
-        console.log("✅ Schedule loaded:", redirectSchedule);
+        console.log("✅ Schedule loaded", redirectSchedule);
       } catch (err) {
-        console.error("❌ Failed to load schedule:", err);
+        console.error("❌ Failed to load schedule", err);
       }
     }
 
@@ -40,24 +39,14 @@
           return slot.url;
         }
       }
-      return null;
+      return defaultUrl; // default when no slot active
     }
 
     function startScheduler() {
       setInterval(() => {
-        const targetUrl = getCurrentScheduleUrl() || defaultUrl;
-
-        // Open the tab if it doesn't exist or was closed
-        if (!qwicklyTab || qwicklyTab.closed) {
-          qwicklyTab = window.open(targetUrl, "_blank");
-        } 
-        // If tab exists and URL is different, navigate
-        else if (qwicklyTab.location.href !== targetUrl) {
-          qwicklyTab.location.href = targetUrl;
-        }
-
-        qwicklyTab.focus(); // optional: bring tab to front
-      }, 10 * 1000); // every 10 seconds
+        const targetUrl = getCurrentScheduleUrl();
+        console.log("📌 Current page should be:", targetUrl);
+      }, 10 * 1000); // check every 10 seconds
     }
 
     window.onload = async () => {
@@ -68,6 +57,7 @@
 </head>
 <body>
   <h2>Qwickly Scheduler</h2>
-  <p>✅ Scheduler running. Qwickly page opens in a separate tab and stays updated every 10 seconds.</p>
+  <p>✅ Scheduler running. Check the console to see which URL should be active.</p>
+  <p>⚠️ Keep your Qwickly tab logged in. This page won’t redirect it automatically to avoid multiple tabs.</p>
 </body>
 </html>
