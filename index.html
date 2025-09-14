@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto Login & URL Switcher</title>
+  <script>
+    // 🔹 Replace with your published Google Sheet CSV link
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSKe2eYoo_HRzQ8N7qKNEt82UTG4G3aGIunVJBrrGyMINKLLzYiQr0XBpbevU1MOkl7hkA2zAxcazdt/pub?output=csv";
+
+    let redirectSchedule = [];
+
+    async function fetchSchedule() {
+      try {
+        const res = await fetch(sheetUrl);
+        const text = await res.text();
+        redirectSchedule = text.split("\n").slice(1).map(row => {
+          const [day, start, end, url] = row.split(",");
+          return {
+            day: day ? day.trim().toLowerCase() : "", // blank = every day
+            start: start.trim(),
+            end: end.trim(),
+            url: url.trim()
+          };
+        });
+        console.log("✅ Schedule loaded:", redirectSchedule);
+      } catch (err) {
+        console.error("❌ Failed to load schedule:", err);
+      }
+    }
+
+    function getCurrentScheduleUrl() {
+      const now = new Date();
+      const currentDay = now.toLocaleDateString("en-US", { weekday: "long" }).toLowerCase();
+      const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      for (const slot of redirectSchedule) {
+        const appliesToday = slot.day === "" || slot.day === currentDay;
+        if (appliesToday && currentTime >= slot.start && currentTime < slot.end) {
+          return slot.url;
+        }
+      }
+      return null;
+    }
+
+    function startRedirectLoop() {
+      setInterval(() => {
+        const targetUrl = getCurrentScheduleUrl();
+        if (targetUrl && window.location.href !== targetUrl) {
+          console.log("➡️ Redirecting to:", targetUrl);
+          window.location.href = targetUrl;
+        }
+      }, 60 * 1000); // check every minute
+    }
+
+    window.onload = async () => {
+      await fetchSchedule();
+      startRedirectLoop();
+    };
+  </script>
+</head>
+<body>
+  <h2>Auto Page Switcher (Day optional)</h2>
+  <p>This page changes URLs based on Google Sheet schedule.</p>
+  <p>Leave <b>Day</b> empty in the sheet for "everyday" schedules.</p>
+</body>
+</html>
